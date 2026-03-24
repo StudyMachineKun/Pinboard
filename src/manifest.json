@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Pinboard — AI Knowledge Library",
+  "version": "0.1.0",
+  "description": "Save, organize, and re-use the best outputs from your AI conversations.",
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "activeTab",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "https://chatgpt.com/*",
+    "https://gemini.google.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service-worker.ts",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel/index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["src/content-scripts/platforms/claude.ts"]
+    },
+    {
+      "matches": ["https://chatgpt.com/*"],
+      "js": ["src/content-scripts/platforms/chatgpt.ts"]
+    },
+    {
+      "matches": ["https://gemini.google.com/*"],
+      "js": ["src/content-scripts/platforms/gemini.ts"]
+    }
+  ],
+  "icons": {
+    "16": "public/icons/icon-16.png",
+    "32": "public/icons/icon-32.png",
+    "48": "public/icons/icon-48.png",
+    "128": "public/icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "Open Pinboard"
+  }
+}

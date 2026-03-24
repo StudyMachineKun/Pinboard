@@ -549,3 +549,100 @@ package.json
 README.md
 LICENSE
 ```
+
+---
+
+## Checklist
+
+### Phase 1: Project scaffolding + storage layer
+- [x] 1.1 Initialize the project (npm, dependencies, tsconfig, tailwind, vite config)
+- [x] 1.2 Create manifest.json
+- [x] 1.3 Build the storage layer (models.ts, db.ts, migrations.ts)
+- [x] 1.4 Build the search index (useSearch.ts hook with FlexSearch)
+- [x] 1.5 Background service worker (message handling, side panel open)
+
+### Phase 2: Content scripts + pin button injection
+- [x] 2.1 Platform adapter interface
+- [x] 2.2 Claude content script (first platform, end-to-end)
+- [x] 2.3 ChatGPT content script
+- [x] 2.4 Gemini content script
+- [x] 2.5 Pin button component + pinboard-inject.css (Shadow DOM isolated)
+- [x] 2.6 Save dialog (plain DOM, board selector, note/action fields)
+
+### Phase 3: Side panel UI
+- [x] 3.1 Side panel shell (index.html, main.tsx, App.tsx with tab navigation)
+- [x] 3.2 Board list view (BoardList.tsx)
+- [x] 3.3 Board view — single board (BoardView.tsx)
+- [x] 3.4 Saved item card (SavedItemCard.tsx)
+- [x] 3.5 Note editor (NoteEditor.tsx)
+- [x] 3.6 Actions list view (ActionsList.tsx)
+- [x] 3.7 Search (SearchBar.tsx)
+- [x] 3.8 Re-inject button (ReInjectButton.tsx)
+- [x] 3.9 Export functionality (export.ts)
+
+### Phase 4: Polish + hardening
+- [ ] 4.1 Keyboard shortcuts
+- [ ] 4.2 Empty states and onboarding
+- [ ] 4.3 Error handling and resilience
+- [ ] 4.4 SPA navigation handling
+- [ ] 4.5 Performance optimizations
+- [ ] 4.6 Extension icon + branding (placeholder icons created)
+- [ ] 4.7 Context menu integration
+- [ ] 4.8 Testing (manual testing matrix)
+
+---
+
+## Execution log
+
+### Phase 1 — 2026-03-24
+
+**Decisions:**
+- Used `@crxjs/vite-plugin` v2.4.0 as primary build tool (confirmed actively maintained).
+- Used Tailwind v4 with `@tailwindcss/vite` plugin — no `tailwind.config.js` or `postcss.config.js` needed. Tailwind v4 uses `@import "tailwindcss"` in CSS instead of `@tailwind` directives.
+- Used `npm` as package manager (not `uv` — this is a Node.js project).
+- Pin button and save dialog will use Shadow DOM for CSS isolation (decided during planning review).
+
+**Issues encountered:**
+1. **FlexSearch ships its own `.d.ts` now (v0.8.212).** Initially created a custom `flexsearch.d.ts` type stub, but it conflicted with the bundled types. Deleted the stub and used the official types. The `Document` class requires data to conform to `DocumentData` (recursive `Record<string, DocumentValue>`), so `SavedItem` needs to be mapped to a flat `DocumentData` object before indexing — cannot pass the interface directly.
+2. **Chrome API types not found by tsc.** Needed `npm install -D @types/chrome` and `"types": ["chrome"]` in `tsconfig.json`. The `@crxjs/vite-plugin` handles Chrome APIs at build time but tsc needs the type declarations separately.
+3. **CSS import type error.** TypeScript couldn't resolve `import './index.css'`. Added `src/types/css.d.ts` with a module declaration for `*.css`.
+4. **React 19 installed (latest).** `npm install react react-dom` pulled React 19.2.4 instead of React 18. This is fine — React 19 is stable and `@crxjs/vite-plugin` v2.4.0 supports it. The CLAUDE.md spec says "React 18" but using the latest is correct per project guidelines.
+5. **Rollup vulnerability (high severity).** `npm audit` flagged rollup <2.80.0 with an arbitrary file write via path traversal. This is a transitive dependency of `@crxjs/vite-plugin` and only runs at build time on trusted input — not a runtime risk. The fix would downgrade crxjs to v1, which is a breaking change. Accepted as-is.
+
+### Phase 2 — 2026-03-24
+
+**Architecture:**
+- **Shadow DOM isolation.** Each pin button gets its own shadow root on a `<div data-pinboard="anchor">` appended to the assistant message element. The save dialog and toast render inside a separate global shadow root (`#pinboard-root` on `document.body`). CSS is inlined into each shadow root — no stylesheets leak into or from the host page.
+- **Shadow host utility (`shadow-host.ts`).** Uses Vite's `?inline` CSS import to bundle `pinboard-inject.css` as a string, then injects it as a `<style>` inside the shadow root. This is the correct approach for Shadow DOM + Vite.
+- **Pin button has its own mini shadow root** (per-button) with minimal inline CSS, rather than sharing the global shadow root. This is because the button needs to be visually positioned inside the assistant message DOM, not in a detached container.
+
+**Implementation notes:**
+- All three platform scripts (claude.ts, chatgpt.ts, gemini.ts) follow the same pattern: SELECTORS object at top, PlatformAdapter implementation, streaming detection via MutationObserver + 1.5s debounce, SPA navigation via URL change detection, and a `PASTE_INTO_INPUT` message listener for re-injection.
+- Streaming detection has two signals: (1) MutationObserver debounce (1.5s of no DOM changes) and (2) platform-specific "done" indicators (e.g., copy button appearing). Claude checks for `button[aria-label="Copy"]`, ChatGPT checks for `button[data-testid="copy-turn-action-button"]`, Gemini uses only the debounce.
+- Save dialog state management is done with closures and mutable variables (not React) — rerender is manual via `dialog.innerHTML = buildDialogHTML(...)` + re-attaching event listeners. This keeps content scripts lightweight with no framework dependency.
+- Vite correctly code-splits the shared modules: `shadow-host.ts` (8.58 kB, includes bundled CSS) is a shared chunk loaded by all three platform scripts. Each platform script is ~3.8 kB.
+
+**Issues encountered:**
+1. **Vite `?inline` CSS import needs its own type declaration.** Added `declare module '*.css?inline'` to `src/types/css.d.ts` alongside the existing `*.css` declaration.
+2. **Save dialog `chrome.storage.local.get` returns `Record<string, unknown>`.** The value retrieved for `lastUsedBoardId` needed an explicit `String()` cast to satisfy TypeScript's strict mode — assigning `unknown` to `string` is not allowed.
+
+### Phase 3 — 2026-03-24
+
+**Architecture:**
+- **App.tsx routing.** Simple state-based navigation: `view` (boards/search/actions) + `selectedBoard`. When a board is selected, the tab nav hides and `BoardView` renders with a back button. No router library needed for a side panel.
+- **Each view owns its data.** `BoardView`, `ActionsList`, and `SearchBar` each instantiate their own `useSavedItems` / `useBoards` hooks. This avoids prop drilling and keeps components self-contained. The trade-off is multiple Dexie reads, but IndexedDB reads are fast and the dataset is small.
+- **`SavedItemCard` is memoized** with `React.memo` to avoid re-renders when sibling items change (per Phase 4.5 performance spec).
+
+**Implementation notes:**
+- **BoardList.tsx**: Inline board creation (name + color picker), item counts loaded via Dexie `count()` query per board, delete with confirmation. Boards sorted by `order` field.
+- **BoardView.tsx**: Shows all saved items for a board, most recent first. Uses `useSavedItems(boardId)` for filtered loading. Supports move-to-board via the item card menu.
+- **SavedItemCard.tsx**: Content preview (first 200 chars, click to expand), platform badge with per-platform colors, inline note editor, action checkbox with strikethrough, tags, metadata footer, three-dot menu (move to board, view original, delete), re-inject button.
+- **NoteEditor.tsx**: Click-to-edit inline input. Blur or Enter saves, Escape cancels. Controlled component synced with parent via `onSave` callback.
+- **ActionsList.tsx**: Filters all saved items to those with uncompleted actions. Shows board name on each card (`showBoard` prop). Checking the checkbox marks the action complete and removes it from the view.
+- **SearchBar.tsx**: Uses FlexSearch via `useSearch` hook. Instant results as you type. Matched items displayed as `SavedItemCard` with board names.
+- **ReInjectButton.tsx**: Queries active tab via `chrome.tabs`, checks if it's a supported platform, sends `PASTE_INTO_INPUT` message to the content script. Falls back to clipboard copy if the tab isn't a supported platform or if messaging fails.
+- **export.ts**: Single item export as markdown with YAML frontmatter (board, platform, URL, tags, note, action). Board export downloads an index file + individual item files. No zip dependency — downloads individual files.
+- **reinject.ts**: Utility for formatting content for re-injection (shared format string). Used by content scripts.
+
+**Issues encountered:**
+- None — Phase 3 was straightforward. All components built incrementally, `tsc` and `vite build` passed on first attempt after all components were wired together.

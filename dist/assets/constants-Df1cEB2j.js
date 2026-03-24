@@ -1,0 +1,1 @@
+var e=[`#6C5CE7`,`#0984E3`,`#00B894`,`#FDCB6E`,`#E17055`,`#D63031`,`#E84393`,`#636E72`],t={lastUsedBoardId:`pinboard_last_used_board_id`,onboardingDismissed:`pinboard_onboarding_dismissed`};export{t as n,e as t};

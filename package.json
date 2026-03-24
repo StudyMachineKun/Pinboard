@@ -1,0 +1,41 @@
+{
+  "name": "pinboard-extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Save, organize, and re-use the best outputs from your AI conversations.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StudyMachineKun/Pinboard.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/StudyMachineKun/Pinboard/issues"
+  },
+  "homepage": "https://github.com/StudyMachineKun/Pinboard#readme",
+  "dependencies": {
+    "dexie": "^4.3.0",
+    "flexsearch": "^0.8.212",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@anthropic-ai/claude-code": "^2.1.81",
+    "@crxjs/vite-plugin": "^2.4.0",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/chrome": "^0.1.38",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tailwindcss": "^4.2.2",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.2"
+  }
+}

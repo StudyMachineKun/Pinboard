@@ -1,0 +1,94 @@
+{
+  "manifest_version": 3,
+  "name": "Pinboard — AI Knowledge Library",
+  "version": "0.1.0",
+  "description": "Save, organize, and re-use the best outputs from your AI conversations.",
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "activeTab",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "https://chatgpt.com/*",
+    "https://gemini.google.com/*"
+  ],
+  "background": {
+    "service_worker": "service-worker-loader.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel/index.html"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "assets/claude.ts-loader-DgWsZmmT.js"
+      ],
+      "matches": [
+        "https://claude.ai/*"
+      ]
+    },
+    {
+      "js": [
+        "assets/chatgpt.ts-loader-Da40fkPO.js"
+      ],
+      "matches": [
+        "https://chatgpt.com/*"
+      ]
+    },
+    {
+      "js": [
+        "assets/gemini.ts-loader-CVgjudae.js"
+      ],
+      "matches": [
+        "https://gemini.google.com/*"
+      ]
+    }
+  ],
+  "icons": {
+    "16": "public/icons/icon-16.png",
+    "32": "public/icons/icon-32.png",
+    "48": "public/icons/icon-48.png",
+    "128": "public/icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "Open Pinboard"
+  },
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://claude.ai/*"
+      ],
+      "resources": [
+        "assets/shadow-host-CngAOAJN.js",
+        "assets/constants-Df1cEB2j.js",
+        "assets/claude.ts-CbGstcTI.js"
+      ],
+      "use_dynamic_url": false
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "resources": [
+        "assets/shadow-host-CngAOAJN.js",
+        "assets/constants-Df1cEB2j.js",
+        "assets/chatgpt.ts-CYuwXxKf.js"
+      ],
+      "use_dynamic_url": false
+    },
+    {
+      "matches": [
+        "https://gemini.google.com/*"
+      ],
+      "resources": [
+        "assets/shadow-host-CngAOAJN.js",
+        "assets/constants-Df1cEB2j.js",
+        "assets/gemini.ts-Du9elNlT.js"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}
