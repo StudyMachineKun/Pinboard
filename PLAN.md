@@ -686,3 +686,12 @@ The expanded view rendered `item.contentPlain` — raw unformatted text with no 
 1. Expanded view now renders `item.content` (HTML) via `dangerouslySetInnerHTML` inside a `.pb-content` wrapper. Collapsed preview still uses `contentPlain` with `line-clamp-3`.
 2. Added "Show less" button below expanded content.
 3. Added `.pb-content` CSS styles in `src/sidepanel/index.css` covering: paragraph spacing, heading sizes (h1-h4), list indentation, code blocks (gray bg, rounded, `overflow-x: auto`, monospace), inline code, table borders, blockquotes with purple left border accent, strong/em, hr. All sized for narrow side panel (~320px).
+
+### Re-injection formatting fix — 2026-03-26
+
+**Problem:** Re-injected content in chat input fields had excessive vertical spacing between lines. The `contentPlain` text (extracted by joining block elements with `\n`) often contained runs of 3+ consecutive newlines. Chat input editors (ProseMirror on Claude, contenteditable on others) render each `\n` as a separate paragraph/line break, creating large visual gaps.
+
+**Fix applied (claude.ts, chatgpt.ts, gemini.ts):**
+1. Added whitespace normalization before formatting: `text.replace(/\n{3,}/g, '\n\n').trim()` — collapses 3+ consecutive newlines into double newlines (paragraph breaks).
+2. Reduced wrapper spacing in the formatting template — removed extra blank lines around `---` separators (changed `\n\n---\n` to `\n---\n`).
+3. No changes to Pinboard's internal display — `contentPlain` stored in IndexedDB and rendered in the side panel is unaffected.
