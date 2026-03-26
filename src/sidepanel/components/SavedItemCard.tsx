@@ -51,36 +51,38 @@ export const SavedItemCard = memo(function SavedItemCard({
     : null;
 
   return (
-    <div className="border border-gray-200 rounded-lg p-3 space-y-2 relative">
+    <div className="bg-white border border-gray-200 rounded-lg p-3 space-y-2 relative">
       {/* Header: platform badge + menu */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${PLATFORM_COLORS[item.source.platform]}`}>
+        <div className="flex items-center gap-1.5">
+          <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded ${PLATFORM_COLORS[item.source.platform]}`}>
             {PLATFORM_LABELS[item.source.platform]}
           </span>
           {boardName && (
-            <span className="text-[10px] text-gray-400">{boardName}</span>
+            <span className="text-[11px] text-gray-400 truncate max-w-[120px]">{boardName}</span>
           )}
         </div>
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="text-gray-400 hover:text-gray-600 text-sm px-1"
+            className="text-gray-300 hover:text-gray-500 p-0.5 transition-colors"
           >
-            ...
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" />
+            </svg>
           </button>
           {showMenu && (
             <div className="absolute right-0 top-6 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10 min-w-[140px]">
               {boards && onMove && (
                 <div className="px-3 py-1.5">
-                  <div className="text-[10px] text-gray-400 mb-1">Move to</div>
+                  <div className="text-[11px] text-gray-400 mb-1">Move to</div>
                   {boards
                     .filter((b) => b.id !== item.boardId)
                     .map((b) => (
                       <button
                         key={b.id}
                         onClick={() => { onMove(item.id, b.id); setShowMenu(false); }}
-                        className="block w-full text-left text-xs py-1 hover:text-[#6C5CE7]"
+                        className="block w-full text-left text-xs py-1 text-gray-600 hover:text-[#6C5CE7] transition-colors"
                       >
                         {b.name}
                       </button>
@@ -92,7 +94,7 @@ export const SavedItemCard = memo(function SavedItemCard({
                   href={item.source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block px-3 py-1.5 text-xs hover:bg-gray-50"
+                  className="block px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
                   onClick={() => setShowMenu(false)}
                 >
                   View original
@@ -100,7 +102,7 @@ export const SavedItemCard = memo(function SavedItemCard({
               )}
               <button
                 onClick={() => { onDelete(item.id); setShowMenu(false); }}
-                className="block w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50"
+                className="block w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 transition-colors"
               >
                 Delete
               </button>
@@ -118,15 +120,16 @@ export const SavedItemCard = memo(function SavedItemCard({
           />
           <button
             onClick={() => setExpanded(false)}
-            className="text-xs text-[#6C5CE7] hover:text-[#5A4BD1] mt-1"
+            className="text-xs text-[#6C5CE7] hover:text-[#5A4BD1] mt-1.5 font-medium transition-colors"
           >
-            Show less ↑
+            Show less
           </button>
         </div>
       ) : (
         <div
           onClick={() => needsTruncation && setExpanded(true)}
-          className={`text-sm text-gray-700 ${needsTruncation ? 'cursor-pointer' : ''} line-clamp-3`}
+          className={`text-sm text-gray-600 ${needsTruncation ? 'cursor-pointer hover:text-gray-800' : ''} line-clamp-3`}
+          style={{ lineHeight: '1.55' }}
         >
           {previewText}
           {needsTruncation && '...'}
@@ -150,7 +153,7 @@ export const SavedItemCard = memo(function SavedItemCard({
       {item.tags.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {item.tags.map((tag) => (
-            <span key={tag} className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">
+            <span key={tag} className="text-[11px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">
               {tag}
             </span>
           ))}
@@ -158,8 +161,8 @@ export const SavedItemCard = memo(function SavedItemCard({
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-1 border-t border-gray-100">
-        <span className="text-[10px] text-gray-400">{timeStr}</span>
+      <div className="flex items-center justify-between pt-1.5 border-t border-gray-100">
+        <span className="text-[11px] text-gray-400">{timeStr}</span>
         <ReInjectButton contentPlain={item.contentPlain} />
       </div>
     </div>

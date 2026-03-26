@@ -4,31 +4,22 @@ interface OnboardingCardProps {
 
 export function OnboardingCard({ onDismiss }: OnboardingCardProps) {
   return (
-    <div className="mb-4 border border-[#6C5CE7]/30 bg-[#6C5CE7]/5 rounded-lg p-4 space-y-3">
-      <h2 className="text-sm font-semibold text-[#6C5CE7]">Welcome to PinAI</h2>
-      <p className="text-xs text-gray-600 leading-relaxed">
-        Save the best outputs from your AI conversations and organize them into project boards.
-      </p>
-      <ul className="text-xs text-gray-600 space-y-1.5">
-        <li>
-          <span className="font-medium text-gray-700">Project boards</span> — organize saves by project or topic
-        </li>
-        <li>
-          <span className="font-medium text-gray-700">Notes & actions</span> — annotate why you saved something and track next steps
-        </li>
-        <li>
-          <span className="font-medium text-gray-700">Re-inject</span> — paste saved outputs back into new conversations as context
-        </li>
-      </ul>
-      <p className="text-[10px] text-gray-400">
-        Tip: Use Cmd+Shift+S (Ctrl+Shift+S) to quick-save the latest response.
-      </p>
-      <button
-        onClick={onDismiss}
-        className="text-xs font-medium text-[#6C5CE7] hover:text-[#5a4bd1]"
-      >
-        Got it, let's go
-      </button>
+    <div className="mb-3 rounded-lg p-3.5 border border-[#6C5CE7]/20" style={{ background: '#F8F7FF' }}>
+      <p className="text-xs font-medium text-[#6C5CE7] mb-2.5">How PinAI works</p>
+      <div className="space-y-1.5 text-xs text-gray-600" style={{ lineHeight: '1.6' }}>
+        <p><span className="text-gray-800 font-medium">Pin</span> the best AI outputs from any conversation</p>
+        <p><span className="text-gray-800 font-medium">Organize</span> into project boards with notes and actions</p>
+        <p><span className="text-gray-800 font-medium">Re-inject</span> saved outputs into new chats as context</p>
+      </div>
+      <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-[#6C5CE7]/10">
+        <span className="text-[11px] text-gray-400">Tip: Cmd+Shift+S to quick-save</span>
+        <button
+          onClick={onDismiss}
+          className="text-[11px] font-medium text-[#6C5CE7] hover:text-[#5a4bd1]"
+        >
+          Dismiss
+        </button>
+      </div>
     </div>
   );
 }

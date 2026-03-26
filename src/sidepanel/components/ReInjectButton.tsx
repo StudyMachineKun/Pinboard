@@ -28,8 +28,11 @@ export function ReInjectButton({ contentPlain }: ReInjectButtonProps) {
     <button
       onClick={handleClick}
       title="Re-inject into active chat"
-      className="text-xs text-[#6C5CE7] hover:text-[#5a4bd1] font-medium"
+      className="inline-flex items-center gap-1 text-[11px] text-[#6C5CE7] hover:text-[#5a4bd1] font-medium transition-colors"
     >
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13.8 12H3" />
+      </svg>
       Re-inject
     </button>
   );
