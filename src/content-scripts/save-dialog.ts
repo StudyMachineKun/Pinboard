@@ -1,6 +1,7 @@
 import type { Board } from '../storage/models';
 import type { Platform, SaveItemPayload } from '../shared/types';
 import { DEFAULT_BOARD_COLORS, STORAGE_KEYS } from '../shared/constants';
+import { isContextValid } from './shadow-host';
 
 export interface SaveDialogData {
   content: string;
@@ -73,21 +74,28 @@ export function showSaveDialog(options: SaveDialogOptions) {
   shadowRoot.appendChild(overlay);
 
   // Load boards from background
-  chrome.runtime.sendMessage({ type: 'GET_BOARDS' }, (response: Board[]) => {
-    boards = response || [];
-    dialogState.boards = boards;
+  if (!isContextValid()) return;
+  try {
+    chrome.runtime.sendMessage({ type: 'GET_BOARDS' }, (response: Board[]) => {
+      if (chrome.runtime.lastError) return;
+      boards = response || [];
+      dialogState.boards = boards;
 
-    // Restore last-used board
-    chrome.storage.local.get(STORAGE_KEYS.lastUsedBoardId, (result) => {
-      const lastId = String(result[STORAGE_KEYS.lastUsedBoardId] ?? '');
-      if (lastId && boards.some((b) => b.id === lastId)) {
-        selectedBoardId = lastId;
-      } else if (boards.length > 0) {
-        selectedBoardId = boards[0].id;
-      }
-      dialogState.rerender();
+      // Restore last-used board
+      chrome.storage.local.get(STORAGE_KEYS.lastUsedBoardId, (result) => {
+        if (chrome.runtime.lastError) return;
+        const lastId = String(result[STORAGE_KEYS.lastUsedBoardId] ?? '');
+        if (lastId && boards.some((b) => b.id === lastId)) {
+          selectedBoardId = lastId;
+        } else if (boards.length > 0) {
+          selectedBoardId = boards[0].id;
+        }
+        dialogState.rerender();
+      });
     });
-  });
+  } catch {
+    // Extension context invalidated
+  }
 
   // Close on overlay click (outside dialog)
   overlay.addEventListener('click', (e) => {

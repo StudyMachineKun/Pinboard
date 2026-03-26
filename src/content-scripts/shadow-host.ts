@@ -13,10 +13,13 @@ export function isContextValid(): boolean {
 
 /** Get or create the Shadow DOM host for all PinAI UI injected into the page. */
 export function getShadowRoot(): ShadowRoot {
-  let host = document.getElementById(HOST_ID);
-  if (host?.shadowRoot) return host.shadowRoot;
+  const existing = document.getElementById(HOST_ID);
+  if (existing?.shadowRoot) return existing.shadowRoot;
 
-  host = document.createElement('div');
+  // Remove stale host element (e.g. from previous extension context)
+  existing?.remove();
+
+  const host = document.createElement('div');
   host.id = HOST_ID;
   document.body.appendChild(host);
 
