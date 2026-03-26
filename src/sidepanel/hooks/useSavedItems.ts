@@ -27,7 +27,16 @@ export function useSavedItems(boardId?: string) {
       if (document.visibilityState === 'visible') loadItems();
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+
+    const onMessage = (message: { type: string }) => {
+      if (message.type === 'DATA_CHANGED') loadItems();
+    };
+    chrome.runtime.onMessage.addListener(onMessage);
+
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      chrome.runtime.onMessage.removeListener(onMessage);
+    };
   }, [loadItems]);
 
   const updateItem = useCallback(async (id: string, changes: Partial<SavedItem>) => {
