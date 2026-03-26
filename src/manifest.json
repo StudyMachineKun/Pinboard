@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Pinboard — AI Knowledge Library",
+  "name": "PinAI — AI Knowledge Library",
   "version": "0.1.0",
   "description": "Save, organize, and re-use the best outputs from your AI conversations.",
   "permissions": [
@@ -42,6 +42,22 @@
     "128": "public/icons/icon-128.png"
   },
   "action": {
-    "default_title": "Open Pinboard"
+    "default_title": "Open PinAI"
+  },
+  "commands": {
+    "quick-save": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Quick save the latest AI response to last-used board"
+    },
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "Toggle PinAI side panel"
+    }
   }
 }

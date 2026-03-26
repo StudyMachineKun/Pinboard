@@ -2,6 +2,7 @@ import type { PlatformAdapter } from '../platform-adapter';
 import { createPinButton, flashPinButtonSuccess } from '../pin-button';
 import { showSaveDialog, type SaveDialogData } from '../save-dialog';
 import { getShadowRoot, isContextValid } from '../shadow-host';
+import { STORAGE_KEYS } from '../../shared/constants';
 
 // Last verified: 2026-03-24
 const SELECTORS = {
@@ -12,7 +13,7 @@ const SELECTORS = {
   conversationTitle: 'title',
 } as const;
 
-const PINNED_ATTR = 'data-pinboard-pinned';
+const PINNED_ATTR = 'data-pinai-pinned';
 
 const claudeAdapter: PlatformAdapter = {
   platform: 'claude',
@@ -63,7 +64,7 @@ const claudeAdapter: PlatformAdapter = {
 
     // Create a host element in the page DOM to anchor the button position
     const anchor = document.createElement('div');
-    anchor.setAttribute('data-pinboard', 'anchor');
+    anchor.setAttribute('data-pinai', 'anchor');
     anchor.style.cssText = 'position:absolute;top:4px;right:4px;z-index:10;';
 
     // Make the message container position:relative if not already
@@ -80,14 +81,14 @@ const claudeAdapter: PlatformAdapter = {
     const style = document.createElement('style');
     style.textContent = `
       :host { all: initial; display: block; }
-      .pb-pin-button {
+      .pinai-pin-button {
         display: inline-flex; align-items: center; justify-content: center;
         width: 28px; height: 28px; padding: 0; border: none; border-radius: 6px;
         background: transparent; color: #9ca3af; cursor: pointer;
         transition: color 0.15s, background 0.15s;
       }
-      .pb-pin-button:hover { color: #6C5CE7; background: rgba(108, 92, 231, 0.1); }
-      .pb-pin-button--saved { color: #10b981; }
+      .pinai-pin-button:hover { color: #6C5CE7; background: rgba(108, 92, 231, 0.1); }
+      .pinai-pin-button--saved { color: #10b981; }
     `;
     btnShadow.appendChild(style);
 
@@ -191,11 +192,67 @@ function waitForStreamingComplete(messageEl: HTMLElement, callback: (el: HTMLEle
   resetTimer();
 }
 
+/** Quick save: save the last assistant message to the last-used board, no dialog. */
+async function quickSave() {
+  try {
+    const messages = claudeAdapter.getAssistantMessages();
+    if (messages.length === 0) return;
+
+    const lastMsg = messages[messages.length - 1];
+    const content = claudeAdapter.extractContent(lastMsg);
+    const contentPlain = Array.from(lastMsg.querySelectorAll('p.font-claude-response-body, pre, ol, ul, h1, h2, h3, h4, table'))
+      .map(e => e.textContent?.trim() ?? '')
+      .filter(t => t.length > 0)
+      .join('\n');
+
+    // Get last-used board, or the first board as fallback
+    const boards = await chrome.runtime.sendMessage({ type: 'GET_BOARDS' }) as { id: string }[];
+    if (!boards || boards.length === 0) {
+      showQuickToast('Create a board first');
+      return;
+    }
+
+    const stored = await chrome.storage.local.get(STORAGE_KEYS.lastUsedBoardId);
+    const lastBoardId = String(stored[STORAGE_KEYS.lastUsedBoardId] ?? '');
+    const boardId = boards.some(b => b.id === lastBoardId) ? lastBoardId : boards[0].id;
+
+    await chrome.runtime.sendMessage({
+      type: 'SAVE_ITEM',
+      payload: {
+        content,
+        contentPlain,
+        promptContext: claudeAdapter.extractPrecedingPrompt(lastMsg) || undefined,
+        source: {
+          platform: 'claude',
+          url: window.location.href,
+          conversationTitle: claudeAdapter.getConversationTitle() || undefined,
+          savedAt: Date.now(),
+        },
+        boardId,
+        tags: [],
+      },
+    });
+
+    showQuickToast('Saved!');
+  } catch (err) {
+    console.error('[PinAI] Quick save failed:', err);
+  }
+}
+
+function showQuickToast(message: string) {
+  const root = getShadowRoot();
+  const toast = document.createElement('div');
+  toast.className = 'pinai-toast';
+  toast.textContent = message;
+  root.appendChild(toast);
+  setTimeout(() => toast.remove(), 1500);
+}
+
 // --- Initialization ---
 
 function init() {
   if (!isContextValid()) return;
-  console.log('[Pinboard] Content script loaded on claude.ai');
+  console.log('[PinAI] Content script loaded on claude.ai');
 
   // Inject pin buttons on existing messages
   const existing = claudeAdapter.getAssistantMessages();
@@ -226,10 +283,12 @@ function init() {
   });
   urlObserver.observe(document.body, { childList: true, subtree: true });
 
-  // Listen for re-inject messages from sidepanel
+  // Listen for messages from sidepanel and background
   chrome.runtime.onMessage.addListener((message) => {
     if (message.type === 'PASTE_INTO_INPUT') {
       claudeAdapter.pasteIntoInput(message.text);
+    } else if (message.type === 'QUICK_SAVE') {
+      quickSave();
     }
   });
 }

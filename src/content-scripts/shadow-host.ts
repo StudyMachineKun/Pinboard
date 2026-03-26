@@ -1,6 +1,6 @@
 import cssText from './pinboard-inject.css?inline';
 
-const HOST_ID = 'pinboard-root';
+const HOST_ID = 'pinai-root';
 
 /** Check if the extension context is still valid (not invalidated by reload). */
 export function isContextValid(): boolean {
@@ -11,7 +11,7 @@ export function isContextValid(): boolean {
   }
 }
 
-/** Get or create the Shadow DOM host for all Pinboard UI injected into the page. */
+/** Get or create the Shadow DOM host for all PinAI UI injected into the page. */
 export function getShadowRoot(): ShadowRoot {
   let host = document.getElementById(HOST_ID);
   if (host?.shadowRoot) return host.shadowRoot;

@@ -43,6 +43,7 @@ export function BoardView({ board, onBack }: BoardViewProps) {
             item={item}
             boards={boards}
             onUpdateNote={(id, note) => updateItem(id, { note })}
+            onUpdateAction={(id, action) => updateItem(id, { action })}
             onToggleAction={(id, completed) => {
               const action = items.find((i) => i.id === id)?.action;
               if (!action) return;

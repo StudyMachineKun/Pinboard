@@ -581,12 +581,12 @@ LICENSE
 - [x] 3.9 Export functionality (export.ts)
 
 ### Phase 4: Polish + hardening
-- [ ] 4.1 Keyboard shortcuts
-- [ ] 4.2 Empty states and onboarding
+- [x] 4.1 Keyboard shortcuts (Cmd/Ctrl+Shift+S quick save, Cmd/Ctrl+Shift+P toggle side panel)
+- [x] 4.2 Empty states and onboarding (OnboardingCard shown once, dismissed via chrome.storage.local)
 - [x] 4.3 Error handling and resilience (DATA_CHANGED listener for sidepanel reactivity)
 - [x] 4.4 SPA navigation handling (robust: polling + Navigation API + popstate + MutationObserver)
-- [ ] 4.5 Performance optimizations
-- [ ] 4.6 Extension icon + branding (placeholder icons created)
+- [x] 4.5 Performance optimizations (batched board counts, FlexSearch DATA_CHANGED rebuild)
+- [x] 4.6 Extension icon + branding (SVG source, proper PNG icons, renamed to PinAI)
 - [ ] 4.7 Context menu integration
 - [ ] 4.8 Testing (manual testing matrix)
 
@@ -695,3 +695,31 @@ The expanded view rendered `item.contentPlain` — raw unformatted text with no 
 1. Added whitespace normalization before formatting: `text.replace(/\n{3,}/g, '\n\n').trim()` — collapses 3+ consecutive newlines into double newlines (paragraph breaks).
 2. Reduced wrapper spacing in the formatting template — removed extra blank lines around `---` separators (changed `\n\n---\n` to `\n---\n`).
 3. No changes to Pinboard's internal display — `contentPlain` stored in IndexedDB and rendered in the side panel is unaffected.
+
+### Phase 4 (4.1–4.6) — 2026-03-26
+
+**4.1 Keyboard shortcuts:**
+- Added `commands` to manifest.json: `quick-save` (Cmd/Ctrl+Shift+S) and `_execute_action` (Cmd/Ctrl+Shift+P to toggle side panel).
+- Service worker listens for `chrome.commands.onCommand` and sends `QUICK_SAVE` message to the active tab's content script.
+- Each platform content script handles `QUICK_SAVE`: grabs last assistant message, extracts content, resolves last-used board (falls back to first board), saves without dialog, shows toast.
+- Added `QUICK_SAVE` to the `Message` union type in `shared/types.ts`.
+
+**4.1 follow-up — ActionEditor component:**
+- Created `ActionEditor.tsx` — inline editor for actions on saved items, similar to `NoteEditor`. Allows adding/editing/removing actions from the side panel after saving (including items saved via quick-save which skip the dialog).
+- Added `onUpdateAction` prop to `SavedItemCard` and wired it in `BoardView`, `ActionsList`, and `SearchBar`.
+
+**4.2 Empty states and onboarding:**
+- Empty states already existed in `BoardList`, `BoardView`, `SearchBar`, `ActionsList`.
+- Created `OnboardingCard.tsx` — explains project boards, notes & actions, re-inject. Includes keyboard shortcut tip.
+- Shows once on first side panel open, dismissed permanently via `chrome.storage.local` (`pinai_onboarding_dismissed` key).
+
+**4.5 Performance optimizations:**
+- `BoardList.tsx`: replaced N individual `db.savedItems.where().count()` queries (one per board) with a single `db.savedItems.toArray()` + in-memory grouping by `boardId`.
+- `useSearch.ts`: added `DATA_CHANGED` listener to rebuild the FlexSearch index when items are saved (including via quick-save), not just on initial panel open.
+- `SavedItemCard` already wrapped in `React.memo`. FlexSearch index already uses `useRef` for single init. Content scripts already use streaming debounce.
+
+**4.6 Extension icon + branding / Rename to PinAI:**
+- Renamed project from "Pinboard" to "PinAI" across all user-facing strings, CSS class prefixes (`pb-` to `pinai-`), DOM attributes (`data-pinboard` to `data-pinai`), console logs (`[Pinboard]` to `[PinAI]`), storage keys, and package name.
+- File and folder names NOT renamed (intentional).
+- IndexedDB database name kept as `'pinboard'` with TODO comment to migrate before public release.
+- Generated new extension icons from SVG source (`public/icons/icon.svg`): white pushpin-on-board silhouette on purple (#6C5CE7) rounded rectangle, exported to 16/32/48/128px PNGs.

@@ -36,6 +36,12 @@ export function useSearch() {
 
   useEffect(() => {
     buildIndex();
+
+    const onMessage = (message: { type: string }) => {
+      if (message.type === 'DATA_CHANGED') buildIndex();
+    };
+    chrome.runtime.onMessage.addListener(onMessage);
+    return () => chrome.runtime.onMessage.removeListener(onMessage);
   }, [buildIndex]);
 
   const search = useCallback((q: string) => {

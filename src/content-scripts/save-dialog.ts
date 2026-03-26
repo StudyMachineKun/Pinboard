@@ -24,10 +24,10 @@ export function showSaveDialog(options: SaveDialogOptions) {
   closeSaveDialog(shadowRoot);
 
   const overlay = document.createElement('div');
-  overlay.className = 'pb-overlay';
+  overlay.className = 'pinai-overlay';
 
   const dialog = document.createElement('div');
-  dialog.className = 'pb-dialog';
+  dialog.className = 'pinai-dialog';
 
   // Position near the pin button
   const top = anchorRect.bottom + 8;
@@ -105,15 +105,15 @@ export function showSaveDialog(options: SaveDialogOptions) {
 }
 
 export function closeSaveDialog(shadowRoot: ShadowRoot) {
-  const existing = shadowRoot.querySelector('.pb-overlay');
+  const existing = shadowRoot.querySelector('.pinai-overlay');
   if (existing) existing.remove();
 }
 
 /** Capture current input values before a rerender destroys them. */
 function captureInputValues(dialog: HTMLElement, state: DialogState) {
-  const nameInput = dialog.querySelector('#pb-new-board-name') as HTMLInputElement | null;
-  const noteInput = dialog.querySelector('#pb-note') as HTMLInputElement | null;
-  const actionInput = dialog.querySelector('#pb-action') as HTMLInputElement | null;
+  const nameInput = dialog.querySelector('#pinai-new-board-name') as HTMLInputElement | null;
+  const noteInput = dialog.querySelector('#pinai-note') as HTMLInputElement | null;
+  const actionInput = dialog.querySelector('#pinai-action') as HTMLInputElement | null;
   if (nameInput) state.setNewBoardName(nameInput.value);
   if (noteInput) state.setNoteValue(noteInput.value);
   if (actionInput) state.setActionValue(actionInput.value);
@@ -129,25 +129,25 @@ function buildDialogHTML(
   actionValue: string,
 ): string {
   const colorDots = DEFAULT_BOARD_COLORS
-    .map((c) => `<span class="pb-color-dot ${c === selectedColor ? 'pb-color-dot--selected' : ''}" data-color="${c}" style="background:${c}"></span>`)
+    .map((c) => `<span class="pinai-color-dot ${c === selectedColor ? 'pinai-color-dot--selected' : ''}" data-color="${c}" style="background:${c}"></span>`)
     .join('');
 
   // Board field: either a dropdown OR the new board form (not both)
   let boardField: string;
   if (showNewBoardForm) {
     boardField = `
-      <div class="pb-new-board-form">
-        <input class="pb-input" id="pb-new-board-name" placeholder="Board name" value="${escapeAttr(newBoardName)}" autofocus />
+      <div class="pinai-new-board-form">
+        <input class="pinai-input" id="pinai-new-board-name" placeholder="Board name" value="${escapeAttr(newBoardName)}" autofocus />
       </div>
-      <div class="pb-color-picker">${colorDots}</div>
-      <button class="pb-btn-link" id="pb-back-to-boards">Back to boards</button>
+      <div class="pinai-color-picker">${colorDots}</div>
+      <button class="pinai-btn-link" id="pinai-back-to-boards">Back to boards</button>
     `;
   } else {
     const boardOptions = boards
       .map((b) => `<option value="${b.id}" ${b.id === selectedBoardId ? 'selected' : ''}>${escapeHTML(b.name)}</option>`)
       .join('');
     boardField = `
-      <select class="pb-select" id="pb-board-select">
+      <select class="pinai-select" id="pinai-board-select">
         ${boardOptions}
         <option value="__new__">+ New board</option>
       </select>
@@ -155,32 +155,32 @@ function buildDialogHTML(
   }
 
   return `
-    <div class="pb-dialog-header">
-      <span class="pb-dialog-title">Save to Pinboard</span>
-      <button class="pb-close-btn" id="pb-close">&times;</button>
+    <div class="pinai-dialog-header">
+      <span class="pinai-dialog-title">Save to PinAI</span>
+      <button class="pinai-close-btn" id="pinai-close">&times;</button>
     </div>
 
-    <div class="pb-field">
-      <label class="pb-label">Board</label>
+    <div class="pinai-field">
+      <label class="pinai-label">Board</label>
       ${boardField}
     </div>
 
-    <div class="pb-field">
-      <label class="pb-label">Note (optional)</label>
-      <input class="pb-input" id="pb-note" placeholder="Why are you saving this?" value="${escapeAttr(noteValue)}" />
+    <div class="pinai-field">
+      <label class="pinai-label">Note (optional)</label>
+      <input class="pinai-input" id="pinai-note" placeholder="Why are you saving this?" value="${escapeAttr(noteValue)}" />
     </div>
 
-    <div class="pb-field">
-      <label class="pb-label">Action (optional)</label>
-      <div class="pb-action-row">
-        <span class="pb-action-icon"></span>
-        <input class="pb-input" id="pb-action" placeholder="What's your next step?" value="${escapeAttr(actionValue)}" />
+    <div class="pinai-field">
+      <label class="pinai-label">Action (optional)</label>
+      <div class="pinai-action-row">
+        <span class="pinai-action-icon"></span>
+        <input class="pinai-input" id="pinai-action" placeholder="What's your next step?" value="${escapeAttr(actionValue)}" />
       </div>
     </div>
 
-    <div class="pb-buttons">
-      <button class="pb-btn pb-btn-secondary" id="pb-cancel">Cancel</button>
-      <button class="pb-btn pb-btn-primary" id="pb-save">Save</button>
+    <div class="pinai-buttons">
+      <button class="pinai-btn pinai-btn-secondary" id="pinai-cancel">Cancel</button>
+      <button class="pinai-btn pinai-btn-primary" id="pinai-save">Save</button>
     </div>
   `;
 }
@@ -217,11 +217,11 @@ function attachDialogListeners(
   shadowRoot: ShadowRoot,
   state: DialogState
 ) {
-  const closeBtn = dialog.querySelector('#pb-close');
-  const cancelBtn = dialog.querySelector('#pb-cancel');
-  const saveBtn = dialog.querySelector('#pb-save');
-  const boardSelect = dialog.querySelector('#pb-board-select') as HTMLSelectElement | null;
-  const backToBoards = dialog.querySelector('#pb-back-to-boards');
+  const closeBtn = dialog.querySelector('#pinai-close');
+  const cancelBtn = dialog.querySelector('#pinai-cancel');
+  const saveBtn = dialog.querySelector('#pinai-save');
+  const boardSelect = dialog.querySelector('#pinai-board-select') as HTMLSelectElement | null;
+  const backToBoards = dialog.querySelector('#pinai-back-to-boards');
 
   // Stop keyboard events from reaching the host page (e.g. Claude's chat input)
   dialog.addEventListener('keydown', (e) => e.stopPropagation());
@@ -248,7 +248,7 @@ function attachDialogListeners(
   });
 
   // Color picker
-  const colorDots = dialog.querySelectorAll('.pb-color-dot');
+  const colorDots = dialog.querySelectorAll('.pinai-color-dot');
   colorDots.forEach((dot) => {
     dot.addEventListener('click', () => {
       state.setSelectedColor((dot as HTMLElement).dataset.color || DEFAULT_BOARD_COLORS[0]);
@@ -262,7 +262,7 @@ function attachDialogListeners(
 
       // Create new board if needed
       if (state.getShowNewBoardForm()) {
-        const nameInput = dialog.querySelector('#pb-new-board-name') as HTMLInputElement | null;
+        const nameInput = dialog.querySelector('#pinai-new-board-name') as HTMLInputElement | null;
         const boardName = nameInput?.value.trim();
         if (!boardName) {
           nameInput?.focus();
@@ -278,8 +278,8 @@ function attachDialogListeners(
 
       if (!boardId) return;
 
-      const noteInput = dialog.querySelector('#pb-note') as HTMLInputElement | null;
-      const actionInput = dialog.querySelector('#pb-action') as HTMLInputElement | null;
+      const noteInput = dialog.querySelector('#pinai-note') as HTMLInputElement | null;
+      const actionInput = dialog.querySelector('#pinai-action') as HTMLInputElement | null;
       const note = noteInput?.value.trim() || undefined;
       const actionText = actionInput?.value.trim();
 
@@ -308,13 +308,13 @@ function attachDialogListeners(
       showToast(shadowRoot, 'Saved!');
       state.onSaved();
     } catch (err) {
-      console.error('[Pinboard] Save failed:', err);
+      console.error('[PinAI] Save failed:', err);
     }
   });
 
   // Enter to save from any input (except new board name, where Enter creates the board)
   dialog.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !(e.target as HTMLElement)?.matches('#pb-new-board-name')) {
+    if (e.key === 'Enter' && !(e.target as HTMLElement)?.matches('#pinai-new-board-name')) {
       saveBtn?.dispatchEvent(new MouseEvent('click'));
     }
   });
@@ -322,7 +322,7 @@ function attachDialogListeners(
 
 function showToast(shadowRoot: ShadowRoot, message: string) {
   const toast = document.createElement('div');
-  toast.className = 'pb-toast';
+  toast.className = 'pinai-toast';
   toast.textContent = message;
   shadowRoot.appendChild(toast);
   setTimeout(() => toast.remove(), 1500);

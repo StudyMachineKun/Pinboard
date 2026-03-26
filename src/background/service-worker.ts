@@ -10,6 +10,16 @@ chrome.action.onClicked.addListener((tab) => {
   }
 });
 
+/** Handle keyboard shortcut commands. */
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === 'quick-save') {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.id) {
+      chrome.tabs.sendMessage(tab.id, { type: 'QUICK_SAVE' });
+    }
+  }
+});
+
 /** Handle messages from content scripts and side panel. */
 chrome.runtime.onMessage.addListener(
   (message: Message, _sender, sendResponse) => {

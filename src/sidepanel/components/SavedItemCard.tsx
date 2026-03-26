@@ -1,6 +1,7 @@
 import { useState, memo } from 'react';
-import type { SavedItem, Board } from '../../storage/models';
+import type { SavedItem, Board, Action } from '../../storage/models';
 import { NoteEditor } from './NoteEditor';
+import { ActionEditor } from './ActionEditor';
 import { ReInjectButton } from './ReInjectButton';
 
 interface SavedItemCardProps {
@@ -8,6 +9,7 @@ interface SavedItemCardProps {
   boards?: Board[];
   showBoard?: boolean;
   onUpdateNote: (id: string, note: string) => void;
+  onUpdateAction: (id: string, action: Action | undefined) => void;
   onToggleAction: (id: string, completed: boolean) => void;
   onDelete: (id: string) => void;
   onMove?: (id: string, boardId: string) => void;
@@ -30,6 +32,7 @@ export const SavedItemCard = memo(function SavedItemCard({
   boards,
   showBoard,
   onUpdateNote,
+  onUpdateAction,
   onToggleAction,
   onDelete,
   onMove,
@@ -110,7 +113,7 @@ export const SavedItemCard = memo(function SavedItemCard({
       {expanded ? (
         <div>
           <div
-            className="pb-content"
+            className="pinai-content"
             dangerouslySetInnerHTML={{ __html: item.content }}
           />
           <button
@@ -137,19 +140,11 @@ export const SavedItemCard = memo(function SavedItemCard({
       />
 
       {/* Action */}
-      {item.action && (
-        <label className="flex items-center gap-2 text-xs">
-          <input
-            type="checkbox"
-            checked={item.action.completed}
-            onChange={(e) => onToggleAction(item.id, e.target.checked)}
-            className="rounded accent-[#6C5CE7]"
-          />
-          <span className={item.action.completed ? 'line-through text-gray-400' : 'text-gray-600'}>
-            {item.action.text}
-          </span>
-        </label>
-      )}
+      <ActionEditor
+        action={item.action}
+        onSave={(action) => onUpdateAction(item.id, action)}
+        onToggle={(completed) => onToggleAction(item.id, completed)}
+      />
 
       {/* Tags */}
       {item.tags.length > 0 && (

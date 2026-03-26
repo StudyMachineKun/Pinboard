@@ -2,6 +2,7 @@ import type { PlatformAdapter } from '../platform-adapter';
 import { createPinButton, flashPinButtonSuccess } from '../pin-button';
 import { showSaveDialog, type SaveDialogData } from '../save-dialog';
 import { getShadowRoot, isContextValid } from '../shadow-host';
+import { STORAGE_KEYS } from '../../shared/constants';
 
 // Last verified: 2026-03-24
 const SELECTORS = {
@@ -13,7 +14,7 @@ const SELECTORS = {
   turnContainer: '[data-testid^="conversation-turn-"]',
 } as const;
 
-const PINNED_ATTR = 'data-pinboard-pinned';
+const PINNED_ATTR = 'data-pinai-pinned';
 
 const chatgptAdapter: PlatformAdapter = {
   platform: 'chatgpt',
@@ -28,7 +29,7 @@ const chatgptAdapter: PlatformAdapter = {
     const markdown = messageEl.querySelector('.markdown');
     const source = markdown || messageEl;
     const clone = source.cloneNode(true) as HTMLElement;
-    clone.querySelectorAll('[data-pinboard]').forEach((el) => el.remove());
+    clone.querySelectorAll('[data-pinai]').forEach((el) => el.remove());
     return clone.innerHTML;
   },
 
@@ -62,7 +63,7 @@ const chatgptAdapter: PlatformAdapter = {
     messageEl.setAttribute(PINNED_ATTR, 'true');
 
     const anchor = document.createElement('div');
-    anchor.setAttribute('data-pinboard', 'anchor');
+    anchor.setAttribute('data-pinai', 'anchor');
     anchor.style.cssText = 'position:absolute;top:4px;right:4px;z-index:10;';
 
     const computed = window.getComputedStyle(messageEl);
@@ -75,14 +76,14 @@ const chatgptAdapter: PlatformAdapter = {
     const style = document.createElement('style');
     style.textContent = `
       :host { all: initial; display: block; }
-      .pb-pin-button {
+      .pinai-pin-button {
         display: inline-flex; align-items: center; justify-content: center;
         width: 28px; height: 28px; padding: 0; border: none; border-radius: 6px;
         background: transparent; color: #9ca3af; cursor: pointer;
         transition: color 0.15s, background 0.15s;
       }
-      .pb-pin-button:hover { color: #6C5CE7; background: rgba(108, 92, 231, 0.1); }
-      .pb-pin-button--saved { color: #10b981; }
+      .pinai-pin-button:hover { color: #6C5CE7; background: rgba(108, 92, 231, 0.1); }
+      .pinai-pin-button--saved { color: #10b981; }
     `;
     btnShadow.appendChild(style);
 
@@ -173,7 +174,7 @@ function waitForStreamingComplete(messageEl: HTMLElement, callback: (el: HTMLEle
 function clearPinnedAttributes() {
   document.querySelectorAll(`[${PINNED_ATTR}]`).forEach((el) => {
     el.removeAttribute(PINNED_ATTR);
-    el.querySelectorAll('[data-pinboard]').forEach((child) => child.remove());
+    el.querySelectorAll('[data-pinai]').forEach((child) => child.remove());
   });
 }
 
@@ -196,14 +197,65 @@ function pollForMessages() {
 function handleNavigation(lastUrl: { value: string }) {
   if (location.href === lastUrl.value) return;
   lastUrl.value = location.href;
-  console.log('[Pinboard] ChatGPT SPA navigation detected');
+  console.log('[PinAI] ChatGPT SPA navigation detected');
   clearPinnedAttributes();
   pollForMessages();
 }
 
+async function quickSave() {
+  try {
+    const messages = chatgptAdapter.getAssistantMessages();
+    if (messages.length === 0) return;
+
+    const lastMsg = messages[messages.length - 1];
+    const content = chatgptAdapter.extractContent(lastMsg);
+    const contentPlain = lastMsg.textContent?.trim() || '';
+
+    const boards = await chrome.runtime.sendMessage({ type: 'GET_BOARDS' }) as { id: string }[];
+    if (!boards || boards.length === 0) {
+      showQuickToast('Create a board first');
+      return;
+    }
+
+    const stored = await chrome.storage.local.get(STORAGE_KEYS.lastUsedBoardId);
+    const lastBoardId = String(stored[STORAGE_KEYS.lastUsedBoardId] ?? '');
+    const boardId = boards.some(b => b.id === lastBoardId) ? lastBoardId : boards[0].id;
+
+    await chrome.runtime.sendMessage({
+      type: 'SAVE_ITEM',
+      payload: {
+        content,
+        contentPlain,
+        promptContext: chatgptAdapter.extractPrecedingPrompt(lastMsg) || undefined,
+        source: {
+          platform: 'chatgpt',
+          url: window.location.href,
+          conversationTitle: chatgptAdapter.getConversationTitle() || undefined,
+          savedAt: Date.now(),
+        },
+        boardId,
+        tags: [],
+      },
+    });
+
+    showQuickToast('Saved!');
+  } catch (err) {
+    console.error('[PinAI] Quick save failed:', err);
+  }
+}
+
+function showQuickToast(message: string) {
+  const root = getShadowRoot();
+  const toast = document.createElement('div');
+  toast.className = 'pinai-toast';
+  toast.textContent = message;
+  root.appendChild(toast);
+  setTimeout(() => toast.remove(), 1500);
+}
+
 function init() {
   if (!isContextValid()) return;
-  console.log('[Pinboard] Content script loaded on chatgpt.com');
+  console.log('[PinAI] Content script loaded on chatgpt.com');
 
   const existing = chatgptAdapter.getAssistantMessages();
   for (const msg of existing) {
@@ -240,6 +292,8 @@ function init() {
   chrome.runtime.onMessage.addListener((message) => {
     if (message.type === 'PASTE_INTO_INPUT') {
       chatgptAdapter.pasteIntoInput(message.text);
+    } else if (message.type === 'QUICK_SAVE') {
+      quickSave();
     }
   });
 }

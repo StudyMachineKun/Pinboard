@@ -20,6 +20,6 @@ export const DEFAULT_BOARD_COLORS = [
 ];
 
 export const STORAGE_KEYS = {
-  lastUsedBoardId: 'pinboard_last_used_board_id',
-  onboardingDismissed: 'pinboard_onboarding_dismissed',
+  lastUsedBoardId: 'pinai_last_used_board_id',
+  onboardingDismissed: 'pinai_onboarding_dismissed',
 } as const;

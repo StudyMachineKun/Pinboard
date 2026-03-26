@@ -1,46 +1,46 @@
 @import "tailwindcss";
 
 /* Rendered HTML content in SavedItemCard expanded view */
-.pb-content {
+.pinai-content {
   font-size: 0.875rem;
   line-height: 1.5;
   color: #374151;
   overflow-wrap: break-word;
 }
 
-.pb-content p {
+.pinai-content p {
   margin-bottom: 0.5rem;
 }
 
-.pb-content h1,
-.pb-content h2,
-.pb-content h3,
-.pb-content h4 {
+.pinai-content h1,
+.pinai-content h2,
+.pinai-content h3,
+.pinai-content h4 {
   font-weight: 600;
   margin-top: 0.75rem;
   margin-bottom: 0.375rem;
   color: #111827;
 }
 
-.pb-content h1 { font-size: 1.125rem; }
-.pb-content h2 { font-size: 1rem; }
-.pb-content h3 { font-size: 0.9375rem; }
-.pb-content h4 { font-size: 0.875rem; }
+.pinai-content h1 { font-size: 1.125rem; }
+.pinai-content h2 { font-size: 1rem; }
+.pinai-content h3 { font-size: 0.9375rem; }
+.pinai-content h4 { font-size: 0.875rem; }
 
-.pb-content ul,
-.pb-content ol {
+.pinai-content ul,
+.pinai-content ol {
   padding-left: 1.25rem;
   margin-bottom: 0.5rem;
 }
 
-.pb-content ul { list-style-type: disc; }
-.pb-content ol { list-style-type: decimal; }
+.pinai-content ul { list-style-type: disc; }
+.pinai-content ol { list-style-type: decimal; }
 
-.pb-content li {
+.pinai-content li {
   margin-bottom: 0.125rem;
 }
 
-.pb-content pre {
+.pinai-content pre {
   background: #f3f4f6;
   border-radius: 0.375rem;
   padding: 0.625rem;
@@ -51,7 +51,7 @@
   margin-bottom: 0.5rem;
 }
 
-.pb-content code {
+.pinai-content code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.8125em;
   background: #f3f4f6;
@@ -59,47 +59,47 @@
   border-radius: 0.25rem;
 }
 
-.pb-content pre code {
+.pinai-content pre code {
   background: none;
   padding: 0;
   font-size: inherit;
 }
 
-.pb-content table {
+.pinai-content table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 0.5rem;
   font-size: 0.8125rem;
 }
 
-.pb-content th,
-.pb-content td {
+.pinai-content th,
+.pinai-content td {
   border: 1px solid #e5e7eb;
   padding: 0.25rem 0.5rem;
   text-align: left;
 }
 
-.pb-content th {
+.pinai-content th {
   background: #f9fafb;
   font-weight: 600;
 }
 
-.pb-content blockquote {
+.pinai-content blockquote {
   border-left: 3px solid #6C5CE7;
   padding-left: 0.75rem;
   margin-bottom: 0.5rem;
   color: #6b7280;
 }
 
-.pb-content strong { font-weight: 600; }
-.pb-content em { font-style: italic; }
+.pinai-content strong { font-weight: 600; }
+.pinai-content em { font-style: italic; }
 
-.pb-content hr {
+.pinai-content hr {
   border: none;
   border-top: 1px solid #e5e7eb;
   margin: 0.5rem 0;
 }
 
-.pb-content > *:last-child {
+.pinai-content > *:last-child {
   margin-bottom: 0;
 }

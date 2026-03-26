@@ -1,10 +1,10 @@
-# CLAUDE.md — Pinboard
+# CLAUDE.md — PinAI
 
 ## What is this project?
 
-Pinboard is a free, open-source Chrome extension that lets users save, organize, annotate, and re-use the best outputs from AI conversations across Claude, ChatGPT, and Gemini. It is a **knowledge library** — not a full-conversation exporter.
+PinAI is a free, open-source Chrome extension that lets users save, organize, annotate, and re-use the best outputs from AI conversations across Claude, ChatGPT, and Gemini. It is a **knowledge library** — not a full-conversation exporter.
 
-The core insight: AI conversations produce brilliant outputs that vanish into scroll history. Existing tools either export entire conversations (too much noise) or save snippets without structure (no organization). Pinboard connects saved outputs to real projects, preserves the context that generated them, lets users annotate *why* they saved something, and — critically — lets them re-inject saved outputs back into new conversations as context.
+The core insight: AI conversations produce brilliant outputs that vanish into scroll history. Existing tools either export entire conversations (too much noise) or save snippets without structure (no organization). PinAI connects saved outputs to real projects, preserves the context that generated them, lets users annotate *why* they saved something, and — critically — lets them re-inject saved outputs back into new conversations as context.
 
 ## Tech stack
 
@@ -34,7 +34,7 @@ pinboard/
 │   │   └── save-dialog.ts         # Quick save modal (project, note, action)
 │   ├── sidepanel/
 │   │   ├── index.html             # Side panel entry
-│   │   ├── index.css              # Tailwind + .pb-content styles for rendered HTML
+│   │   ├── index.css              # Tailwind + .pinai-content styles for rendered HTML
 │   │   ├── App.tsx                # Root component
 │   │   ├── components/
 │   │   │   ├── BoardList.tsx      # List of project boards
@@ -211,7 +211,7 @@ const SELECTORS = {
 - Use TypeScript strict mode
 - Use functional React components with hooks only (no class components)
 - Use Tailwind utility classes for styling — no CSS modules or styled-components
-- Custom CSS for rendered HTML content uses `.pb-content` class in `src/sidepanel/index.css`
+- Custom CSS for rendered HTML content uses `.pinai-content` class in `src/sidepanel/index.css`
 - Name files in kebab-case for utilities, PascalCase for React components
 - Use named exports (not default exports) for everything except React page components
 - Keep content scripts lean — heavy logic belongs in the background service worker or shared utils
@@ -219,7 +219,7 @@ const SELECTORS = {
 - Error handling: wrap all DOM operations in try-catch (platform UIs can change without notice)
 - All user-facing strings should be in English (i18n is a future concern, not v1)
 - SPA navigation in content scripts must use three detection methods together: MutationObserver on body, Navigation API (`navigation.addEventListener('navigate')`), and `popstate` events — all funneled through a single handler that deduplicates via URL comparison
-- After SPA navigation, clear all `data-pinboard-pinned` attributes and poll for new messages (every 500ms, up to 10s) rather than using a single timeout
+- After SPA navigation, clear all `data-pinai-pinned` attributes and poll for new messages (every 500ms, up to 10s) rather than using a single timeout
 - `item.content` stores extracted HTML; `item.contentPlain` stores plain text for search. The expanded view in SavedItemCard renders HTML via `dangerouslySetInnerHTML`, the collapsed preview uses `contentPlain`
 
 ## What not to build (scope boundaries)

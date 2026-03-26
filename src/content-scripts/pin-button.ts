@@ -21,9 +21,9 @@ export function createPinButton(
   callbacks: PinButtonCallbacks
 ): HTMLButtonElement {
   const btn = document.createElement('button');
-  btn.className = 'pb-pin-button';
+  btn.className = 'pinai-pin-button';
   btn.innerHTML = PIN_ICON_SVG;
-  btn.title = 'Save to Pinboard';
+  btn.title = 'Save to PinAI';
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -37,9 +37,9 @@ export function createPinButton(
 /** Briefly swap pin icon to checkmark, then restore. */
 export function flashPinButtonSuccess(btn: HTMLButtonElement) {
   btn.innerHTML = PINNED_CHECK_SVG;
-  btn.classList.add('pb-pin-button--saved');
+  btn.classList.add('pinai-pin-button--saved');
   setTimeout(() => {
     btn.innerHTML = PIN_ICON_SVG;
-    btn.classList.remove('pb-pin-button--saved');
+    btn.classList.remove('pinai-pin-button--saved');
   }, 1500);
 }

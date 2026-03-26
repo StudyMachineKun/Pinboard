@@ -17,9 +17,10 @@ export function BoardList({ boards, onSelect, onCreate, onDelete }: BoardListPro
   const [itemCounts, setItemCounts] = useState<Record<string, number>>({});
 
   const loadCounts = async () => {
+    const allItems = await db.savedItems.toArray();
     const counts: Record<string, number> = {};
-    for (const board of boards) {
-      counts[board.id] = await db.savedItems.where('boardId').equals(board.id).count();
+    for (const item of allItems) {
+      counts[item.boardId] = (counts[item.boardId] ?? 0) + 1;
     }
     setItemCounts(counts);
   };

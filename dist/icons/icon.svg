@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="24" fill="#6C5CE7"/>
+  <g transform="translate(64,64)" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Pin body -->
+    <path d="M0 14 L0 42"/>
+    <!-- Pin head: board/card shape with rounded corners -->
+    <rect x="-26" y="-38" width="52" height="44" rx="8" fill="white" fill-opacity="0.25" stroke="white"/>
+    <!-- Inner pin circle -->
+    <circle cx="0" cy="-16" r="10" fill="white" stroke="none"/>
+  </g>
+</svg>

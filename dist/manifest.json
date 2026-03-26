@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Pinboard — AI Knowledge Library",
+  "name": "PinAI — AI Knowledge Library",
   "version": "0.1.0",
   "description": "Save, organize, and re-use the best outputs from your AI conversations.",
   "permissions": [
@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/claude.ts-loader-DbLuf43Q.js"
+        "assets/claude.ts-loader-BuDh4YAs.js"
       ],
       "matches": [
         "https://claude.ai/*"
@@ -32,7 +32,7 @@
     },
     {
       "js": [
-        "assets/chatgpt.ts-loader-DRH6ohrX.js"
+        "assets/chatgpt.ts-loader--eA2sCTi.js"
       ],
       "matches": [
         "https://chatgpt.com/*"
@@ -40,7 +40,7 @@
     },
     {
       "js": [
-        "assets/gemini.ts-loader-DYc5jbV7.js"
+        "assets/gemini.ts-loader-BV03IJyk.js"
       ],
       "matches": [
         "https://gemini.google.com/*"
@@ -54,7 +54,23 @@
     "128": "public/icons/icon-128.png"
   },
   "action": {
-    "default_title": "Open Pinboard"
+    "default_title": "Open PinAI"
+  },
+  "commands": {
+    "quick-save": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Quick save the latest AI response to last-used board"
+    },
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "Toggle PinAI side panel"
+    }
   },
   "web_accessible_resources": [
     {
@@ -62,9 +78,9 @@
         "https://claude.ai/*"
       ],
       "resources": [
-        "assets/shadow-host-BgrB9ZJu.js",
-        "assets/constants-Df1cEB2j.js",
-        "assets/claude.ts-CHGxovfM.js"
+        "assets/shadow-host-F6cj8TR7.js",
+        "assets/constants-CyXHE8O-.js",
+        "assets/claude.ts-BupB354T.js"
       ],
       "use_dynamic_url": false
     },
@@ -73,9 +89,9 @@
         "https://chatgpt.com/*"
       ],
       "resources": [
-        "assets/shadow-host-BgrB9ZJu.js",
-        "assets/constants-Df1cEB2j.js",
-        "assets/chatgpt.ts-CVcM1Bhl.js"
+        "assets/shadow-host-F6cj8TR7.js",
+        "assets/constants-CyXHE8O-.js",
+        "assets/chatgpt.ts-CYjrYmF7.js"
       ],
       "use_dynamic_url": false
     },
@@ -84,9 +100,9 @@
         "https://gemini.google.com/*"
       ],
       "resources": [
-        "assets/shadow-host-BgrB9ZJu.js",
-        "assets/constants-Df1cEB2j.js",
-        "assets/gemini.ts-2N3oZ_La.js"
+        "assets/shadow-host-F6cj8TR7.js",
+        "assets/constants-CyXHE8O-.js",
+        "assets/gemini.ts-Dchx9F7e.js"
       ],
       "use_dynamic_url": false
     }

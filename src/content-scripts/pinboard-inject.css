@@ -1,4 +1,4 @@
-/* Pinboard injected styles — rendered inside Shadow DOM for isolation. */
+/* PinAI injected styles — rendered inside Shadow DOM for isolation. */
 
 :host {
   all: initial;
@@ -9,7 +9,7 @@
 
 /* Pin button */
 
-.pb-pin-button {
+.pinai-pin-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -24,24 +24,24 @@
   transition: color 0.15s, background 0.15s;
 }
 
-.pb-pin-button:hover {
+.pinai-pin-button:hover {
   color: #6C5CE7;
   background: rgba(108, 92, 231, 0.1);
 }
 
-.pb-pin-button--saved {
+.pinai-pin-button--saved {
   color: #10b981;
 }
 
 /* Save dialog */
 
-.pb-overlay {
+.pinai-overlay {
   position: fixed;
   inset: 0;
   z-index: 2147483647;
 }
 
-.pb-dialog {
+.pinai-dialog {
   position: absolute;
   width: 320px;
   background: #fff;
@@ -52,20 +52,20 @@
   z-index: 2147483647;
 }
 
-.pb-dialog-header {
+.pinai-dialog-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
 
-.pb-dialog-title {
+.pinai-dialog-title {
   font-size: 14px;
   font-weight: 600;
   color: #6C5CE7;
 }
 
-.pb-close-btn {
+.pinai-close-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,16 +80,16 @@
   line-height: 1;
 }
 
-.pb-close-btn:hover {
+.pinai-close-btn:hover {
   background: #f3f4f6;
   color: #374151;
 }
 
-.pb-field {
+.pinai-field {
   margin-bottom: 10px;
 }
 
-.pb-label {
+.pinai-label {
   display: block;
   font-size: 12px;
   font-weight: 500;
@@ -97,8 +97,8 @@
   margin-bottom: 4px;
 }
 
-.pb-select,
-.pb-input {
+.pinai-select,
+.pinai-input {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid #e5e7eb;
@@ -111,23 +111,23 @@
   font-family: inherit;
 }
 
-.pb-select:focus,
-.pb-input:focus {
+.pinai-select:focus,
+.pinai-input:focus {
   border-color: #6C5CE7;
   box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.15);
 }
 
-.pb-input::placeholder {
+.pinai-input::placeholder {
   color: #9ca3af;
 }
 
-.pb-action-row {
+.pinai-action-row {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.pb-action-icon {
+.pinai-action-icon {
   width: 16px;
   height: 16px;
   border: 2px solid #d1d5db;
@@ -135,14 +135,14 @@
   flex-shrink: 0;
 }
 
-.pb-buttons {
+.pinai-buttons {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
   margin-top: 14px;
 }
 
-.pb-btn {
+.pinai-btn {
   padding: 7px 16px;
   border-radius: 8px;
   font-size: 13px;
@@ -152,27 +152,27 @@
   font-family: inherit;
 }
 
-.pb-btn-primary {
+.pinai-btn-primary {
   background: #6C5CE7;
   color: #fff;
 }
 
-.pb-btn-primary:hover {
+.pinai-btn-primary:hover {
   background: #5a4bd1;
 }
 
-.pb-btn-secondary {
+.pinai-btn-secondary {
   background: #f3f4f6;
   color: #374151;
 }
 
-.pb-btn-secondary:hover {
+.pinai-btn-secondary:hover {
   background: #e5e7eb;
 }
 
 /* Toast */
 
-.pb-toast {
+.pinai-toast {
   position: fixed;
   bottom: 24px;
   left: 50%;
@@ -184,28 +184,28 @@
   font-size: 13px;
   font-weight: 500;
   z-index: 2147483647;
-  animation: pb-fade-in 0.2s ease-out;
+  animation: pinai-fade-in 0.2s ease-out;
 }
 
-@keyframes pb-fade-in {
+@keyframes pinai-fade-in {
   from { opacity: 0; transform: translateX(-50%) translateY(8px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 /* New board inline form */
 
-.pb-new-board-form {
+.pinai-new-board-form {
   display: flex;
   gap: 6px;
   align-items: center;
   margin-top: 6px;
 }
 
-.pb-new-board-form .pb-input {
+.pinai-new-board-form .pinai-input {
   flex: 1;
 }
 
-.pb-color-dot {
+.pinai-color-dot {
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -214,19 +214,19 @@
   flex-shrink: 0;
 }
 
-.pb-color-dot:hover,
-.pb-color-dot--selected {
+.pinai-color-dot:hover,
+.pinai-color-dot--selected {
   border-color: #6C5CE7;
 }
 
-.pb-color-picker {
+.pinai-color-picker {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
   margin-top: 4px;
 }
 
-.pb-btn-link {
+.pinai-btn-link {
   background: none;
   border: none;
   color: #9ca3af;
@@ -237,6 +237,6 @@
   font-family: inherit;
 }
 
-.pb-btn-link:hover {
+.pinai-btn-link:hover {
   color: #6C5CE7;
 }
