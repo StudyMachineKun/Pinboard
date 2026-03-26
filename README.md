@@ -25,8 +25,8 @@ Coming soon.
 ### From source
 
 ```bash
-git clone https://github.com/StudyMachineKun/Pinboard.git
-cd Pinboard
+git clone https://github.com/StudyMachineKun/PinAI.git
+cd PinAI
 npm install
 npm run build
 ```
