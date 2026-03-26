@@ -75,7 +75,7 @@ src/
 
 ## Privacy
 
-PinAI stores all data locally in your browser. No data is sent to any server, API, or third party. No analytics, no tracking, no accounts. See [Privacy Policy](docs/privacy-policy.html).
+PinAI stores all data locally in your browser. No data is sent to any server, API, or third party. No analytics, no tracking, no accounts. See [Privacy Policy](https://studymachinekun.github.io/PinAI/docs/privacy-policy.html).
 
 ## License
 
