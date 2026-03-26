@@ -7,7 +7,8 @@ export type Message =
   | { type: 'GET_ITEMS_FOR_BOARD'; boardId: string }
   | { type: 'CREATE_BOARD'; payload: CreateBoardPayload }
   | { type: 'PASTE_INTO_INPUT'; text: string }
-  | { type: 'QUICK_SAVE' };
+  | { type: 'QUICK_SAVE' }
+  | { type: 'SAVE_SELECTION'; text: string };
 
 export interface SaveItemPayload {
   content: string;

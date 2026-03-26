@@ -5,7 +5,7 @@
   (async () => {
     const { onExecute } = await import(
       /* @vite-ignore */
-      chrome.runtime.getURL("assets/chatgpt.ts-CYjrYmF7.js")
+      chrome.runtime.getURL("assets/chatgpt.ts-B7mtfL3J.js")
     );
     onExecute?.({ perf: { injectTime, loadTime: performance.now() - injectTime } });
   })().catch(console.error);

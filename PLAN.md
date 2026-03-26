@@ -461,14 +461,14 @@ All three platforms are single-page apps. The content script must:
 - Icon variants: 16x16, 32x32, 48x48, 128x128 (PNGs)
 - Consider using a badge on the extension icon showing the count of unsaved pending actions
 
-### 4.7 Context menu integration
+### 4.7 Context menu integration ✅
 
 Add a right-click context menu option:
-- When text is selected on a supported platform: "Save selection to Pinboard"
+- When text is selected on a supported platform: "Save selection to PinAI"
 - Opens the save dialog with the selected text as the content
 - This is an alternative to the pin button for when users want to save a specific portion of a response rather than the entire message
 
-### 4.8 Testing strategy
+### 4.8 Testing strategy ✅
 
 - **Manual testing matrix**: test all features on Claude, ChatGPT, and Gemini in Chrome stable
 - **Key test scenarios**:
@@ -480,6 +480,8 @@ Add a right-click context menu option:
   6. Search for a saved item by note text → verify it's found
   7. Navigate between conversations (SPA) → verify pin buttons re-appear
   8. Save during a streaming response → verify it waits for completion
+  9. Right-click selected text → "Save selection to PinAI" → verify save dialog opens with selection
+  10. Quick save (Cmd+Shift+S) → verify toast and item saved to last-used board
 - **Selector regression**: after any platform UI update, run through the save flow on that platform to verify selectors still work
 
 ---
@@ -723,3 +725,15 @@ The expanded view rendered `item.contentPlain` — raw unformatted text with no 
 - File and folder names NOT renamed (intentional).
 - IndexedDB database name kept as `'pinboard'` with TODO comment to migrate before public release.
 - Generated new extension icons from SVG source (`public/icons/icon.svg`): white pushpin-on-board silhouette on purple (#6C5CE7) rounded rectangle, exported to 16/32/48/128px PNGs.
+
+### Phase 4 (4.7–4.8) — 2026-03-26
+
+**4.7 Context menu integration:**
+- Service worker creates a `contextMenus` entry on `chrome.runtime.onInstalled`: "Save selection to PinAI", visible only on supported platform URLs when text is selected.
+- On click, sends `SAVE_SELECTION` message with `info.selectionText` to the active tab's content script.
+- Each platform content script handles `SAVE_SELECTION` by opening the save dialog with the selected text as content, centered on screen.
+- Added `SAVE_SELECTION` to the `Message` union type.
+
+**4.8 Testing strategy:**
+- Added two more test scenarios to the manual testing matrix: context menu save and quick save keyboard shortcut.
+- Phase 4 is now fully complete.

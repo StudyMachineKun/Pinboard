@@ -253,6 +253,22 @@ function showQuickToast(message: string) {
   setTimeout(() => toast.remove(), 1500);
 }
 
+function saveSelection(text: string) {
+  const data: SaveDialogData = {
+    content: `<p>${text}</p>`,
+    contentPlain: text,
+    platform: 'chatgpt',
+    conversationTitle: chatgptAdapter.getConversationTitle() || undefined,
+  };
+  const rect = new DOMRect(window.innerWidth / 2 - 160, 100, 320, 0);
+  showSaveDialog({
+    data,
+    anchorRect: rect,
+    shadowRoot: getShadowRoot(),
+    onSaved: () => {},
+  });
+}
+
 function init() {
   if (!isContextValid()) return;
   console.log('[PinAI] Content script loaded on chatgpt.com');
@@ -294,6 +310,8 @@ function init() {
       chatgptAdapter.pasteIntoInput(message.text);
     } else if (message.type === 'QUICK_SAVE') {
       quickSave();
+    } else if (message.type === 'SAVE_SELECTION') {
+      saveSelection(message.text);
     }
   });
 }

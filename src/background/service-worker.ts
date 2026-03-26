@@ -3,6 +3,30 @@ import type { Board, SavedItem } from '../storage/models';
 import type { Message } from '../shared/types';
 import { v4 as uuidv4 } from 'uuid';
 
+/** Create context menu on install. */
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: 'pinai-save-selection',
+    title: 'Save selection to PinAI',
+    contexts: ['selection'],
+    documentUrlPatterns: [
+      'https://claude.ai/*',
+      'https://chatgpt.com/*',
+      'https://gemini.google.com/*',
+    ],
+  });
+});
+
+/** Handle context menu clicks. */
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === 'pinai-save-selection' && info.selectionText && tab?.id) {
+    chrome.tabs.sendMessage(tab.id, {
+      type: 'SAVE_SELECTION',
+      text: info.selectionText,
+    });
+  }
+});
+
 /** Open side panel when extension icon is clicked. */
 chrome.action.onClicked.addListener((tab) => {
   if (tab.id) {

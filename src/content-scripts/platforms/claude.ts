@@ -248,6 +248,23 @@ function showQuickToast(message: string) {
   setTimeout(() => toast.remove(), 1500);
 }
 
+/** Save selected text via context menu — opens the save dialog. */
+function saveSelection(text: string) {
+  const data: SaveDialogData = {
+    content: `<p>${text}</p>`,
+    contentPlain: text,
+    platform: 'claude',
+    conversationTitle: claudeAdapter.getConversationTitle() || undefined,
+  };
+  const rect = new DOMRect(window.innerWidth / 2 - 160, 100, 320, 0);
+  showSaveDialog({
+    data,
+    anchorRect: rect,
+    shadowRoot: getShadowRoot(),
+    onSaved: () => {},
+  });
+}
+
 // --- Initialization ---
 
 function init() {
@@ -289,6 +306,8 @@ function init() {
       claudeAdapter.pasteIntoInput(message.text);
     } else if (message.type === 'QUICK_SAVE') {
       quickSave();
+    } else if (message.type === 'SAVE_SELECTION') {
+      saveSelection(message.text);
     }
   });
 }
