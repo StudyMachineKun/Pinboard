@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/claude.ts-loader-Xu4RJEor.js"
+        "assets/claude.ts-loader-C7NGZCQo.js"
       ],
       "matches": [
         "https://claude.ai/*"
@@ -80,7 +80,7 @@
       "resources": [
         "assets/save-dialog-AHaEOhEB.js",
         "assets/constants-CyXHE8O-.js",
-        "assets/claude.ts-CO37acPw.js"
+        "assets/claude.ts-vbdQDKN7.js"
       ],
       "use_dynamic_url": false
     },

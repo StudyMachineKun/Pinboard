@@ -3,6 +3,7 @@ import { createPinButton, flashPinButtonSuccess } from '../pin-button';
 import { showSaveDialog, type SaveDialogData } from '../save-dialog';
 import { getShadowRoot, isContextValid } from '../shadow-host';
 import { STORAGE_KEYS } from '../../shared/constants';
+import { isClaudeRetryingState } from './claude-streaming';
 
 // Last verified: 2026-03-24
 const SELECTORS = {
@@ -165,10 +166,32 @@ const claudeAdapter: PlatformAdapter = {
  */
 function waitForStreamingComplete(messageEl: HTMLElement, callback: (el: HTMLElement) => void) {
   let timeout: ReturnType<typeof setTimeout>;
+  const startedAt = Date.now();
+  const MAX_WAIT_MS = 60_000;
 
   const done = () => {
     innerObserver.disconnect();
     callback(messageEl);
+  };
+
+  const shouldWaitForRetryState = () => {
+    const text = messageEl.textContent ?? '';
+    return isClaudeRetryingState(text);
+  };
+
+  const maybeDone = () => {
+    const elapsed = Date.now() - startedAt;
+    if (elapsed >= MAX_WAIT_MS) {
+      done();
+      return;
+    }
+
+    if (shouldWaitForRetryState()) {
+      timeout = setTimeout(maybeDone, 1000);
+      return;
+    }
+
+    done();
   };
 
   const resetTimer = () => {
@@ -182,7 +205,7 @@ function waitForStreamingComplete(messageEl: HTMLElement, callback: (el: HTMLEle
       return;
     }
 
-    timeout = setTimeout(done, 1500);
+    timeout = setTimeout(maybeDone, 1500);
   };
 
   const innerObserver = new MutationObserver(resetTimer);
