@@ -13,7 +13,7 @@ const SELECTORS = {
   conversationContainer: '.conversation-container, main',
   turnContainer: '.conversation-container',
   markdownContent: 'message-content div.markdown',
-  contentElements: 'p, ol, ul, pre, h3, table, hr, code',
+  contentElements: ':scope > p, :scope > ol, :scope > ul, :scope > pre, :scope > h3, :scope > table, :scope > hr',
 } as const;
 
 const PINNED_ATTR = 'data-pinai-pinned';
@@ -97,9 +97,12 @@ const geminiAdapter: PlatformAdapter = {
       onPin: (el) => {
         const data: SaveDialogData = {
           content: geminiAdapter.extractContent(el),
-          contentPlain: Array.from(
-            el.querySelectorAll(`${SELECTORS.markdownContent} ${SELECTORS.contentElements}`)
-          ).map((e) => e.textContent?.trim() ?? '').filter(Boolean).join('\n'),
+          contentPlain: (() => {
+            const md = el.querySelector(SELECTORS.markdownContent);
+            if (!md) return '';
+            return Array.from(md.querySelectorAll(SELECTORS.contentElements))
+              .map((e) => e.textContent?.trim() ?? '').filter(Boolean).join('\n');
+          })(),
           promptContext: geminiAdapter.extractPrecedingPrompt(el) || undefined,
           platform: 'gemini',
           conversationTitle: geminiAdapter.getConversationTitle() || undefined,
@@ -181,9 +184,11 @@ async function quickSave() {
 
     const lastMsg = messages[messages.length - 1];
     const content = geminiAdapter.extractContent(lastMsg);
-    const contentPlain = Array.from(
-      lastMsg.querySelectorAll(`${SELECTORS.markdownContent} ${SELECTORS.contentElements}`)
-    ).map(e => e.textContent?.trim() ?? '').filter(Boolean).join('\n');
+    const md = lastMsg.querySelector(SELECTORS.markdownContent);
+    const contentPlain = md
+      ? Array.from(md.querySelectorAll(SELECTORS.contentElements))
+          .map(e => e.textContent?.trim() ?? '').filter(Boolean).join('\n')
+      : '';
 
     const boards = await chrome.runtime.sendMessage({ type: 'GET_BOARDS' }) as { id: string }[];
     if (!boards || boards.length === 0) {

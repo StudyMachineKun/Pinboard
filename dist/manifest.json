@@ -40,7 +40,7 @@
     },
     {
       "js": [
-        "assets/gemini.ts-loader-DSiBCGSn.js"
+        "assets/gemini.ts-loader-2PmWzhaB.js"
       ],
       "matches": [
         "https://gemini.google.com/*"
@@ -102,7 +102,7 @@
       "resources": [
         "assets/save-dialog-AHaEOhEB.js",
         "assets/constants-CyXHE8O-.js",
-        "assets/gemini.ts-nZvPx7np.js"
+        "assets/gemini.ts-Ci3HMArn.js"
       ],
       "use_dynamic_url": false
     }
